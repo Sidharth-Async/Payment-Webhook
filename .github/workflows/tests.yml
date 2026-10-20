@@ -1,0 +1,29 @@
+name: tests
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: webhook_dev
+          POSTGRES_PASSWORD: paw123
+          POSTGRES_DB: webhooks_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U webhook_dev"
+          --health-interval 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -v
+        env:
+          DATABASE_URL: postgresql+psycopg://webhook_dev:paw123@localhost:5433/webhooks_test
+          WEBHOOK_SECRET: test_secret
