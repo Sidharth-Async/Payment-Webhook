@@ -1,7 +1,7 @@
 import os
 
 # Must be set BEFORE the app is imported, because settings load at import time.
-os.environ["DATABASE_URL"] = "postgresql+psycopg://webhook_dev:passw123@localhost:5433/webhooks_test"
+os.environ["DATABASE_URL"] = "postgresql+psycopg://webhook_dev:change_me@localhost:5433/webhooks_test"
 os.environ["WEBHOOK_SECRET"] = "test_secret"
 
 import hashlib

@@ -3,7 +3,7 @@ services:
     image: postgres:16
     environment:
       POSTGRES_USER: webhook_dev
-      POSTGRES_PASSWORD: pass123
+      POSTGRES_PASSWORD: change_me
       POSTGRES_DB: webhooks
     ports:
       - "5433:5432"
@@ -15,7 +15,7 @@ services:
   api:
     build: .
     environment:
-      DATABASE_URL: postgresql+psycopg://webhook_dev:pass123@db:5432/webhooks
+      DATABASE_URL: postgresql+psycopg://webhook_dev:change_me@db:5432/webhooks
       WEBHOOK_SECRET: web123
     ports:
       - "8000:8000"
