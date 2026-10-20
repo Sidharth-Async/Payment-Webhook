@@ -9,8 +9,10 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.db import get_db
 from app.models import Payment, PaymentEvent
-from app.schemas import WebhookEvent
 from app.security import verify_signature
+
+from sqlalchemy import select
+from app.schemas import PaymentOut, WebhookEvent
 
 app = FastAPI(title="Payment Webhook Service")
 
@@ -69,3 +71,17 @@ async def receive_webhook(
     db.execute(upsert)
     db.commit()
     return {"status": "processed"}
+
+@app.get("/payments", response_model=list[PaymentOut])
+def list_payments(status: str | None = None, db: Session = Depends(get_db)):
+    query = select(Payment).order_by(Payment.id)
+    if status:
+        query = query.where(Payment.status == status)
+    return db.execute(query).scalars().all()
+
+@app.get("/payments/{payment_id}", response_model=PaymentOut)
+def get_payment(payment_id: int, db: Session = Depends(get_db)):
+    payment = db.get(Payment, payment_id)
+    if payment is None:
+        raise HTTPException(status_code=404, detail="Payment not found")
+    return payment
